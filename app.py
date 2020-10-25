@@ -21,6 +21,7 @@ from flask_wtf.csrf import CSRFProtect
 import datetime
 import os
 import time
+import functools
 
 ################################
 #########   GLOBALS   ##########
@@ -152,8 +153,8 @@ def scoreboard():
         if rx != ry: return rx - ry
         tx = time.mktime(x.lastSubmit.timetuple()) if x.lastSubmit else 0
         ty = time.mktime(y.lastSubmit.timetuple()) if y.lastSubmit else 0
-        return int(ty - tx)
-    l = sorted(list(users), cmp=custom_order, reverse=True)
+        return int(ty - tx) 
+    l = sorted(list(users), key = functools.cmp_to_key(custom_order), reverse=True)
     ranking = -1 if current_user.username == "admin" else int(l.index(current_user)) + 1
     return render_template('scoreboard.html', users=l, ranking=ranking)
 
