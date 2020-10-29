@@ -34,7 +34,14 @@ RATE_SCORE = 2
 app = Flask(__name__)
 app.config["SECRET_KEY"] = '0000000000000000000000000'
 app.config["SECURITY_PASSWORD_SALT"] = '0000000000000'
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
+
+ENV = 'prod'
+
+if ENV =='dev':
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
+else:
+    app.debug = False;
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://tvnlwdgisnkpyy:d6f6adf2a029b030905e9ab753deb5f8154f1005acb17ed8f0a21dafd4578c1d@ec2-3-226-231-4.compute-1.amazonaws.com:5432/d46psk6l8tnkba"
 #app.config["PREFERRED_URL_SCHEME"] = 'https' #decomment for HTTPS
 CSRFProtect(app)
 
