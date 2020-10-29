@@ -35,9 +35,9 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = '0000000000000000000000000'
 app.config["SECURITY_PASSWORD_SALT"] = '0000000000000'
 
-ENV = 'prod'
+ENV = 'dev'
 
-if ENV =='dev':
+if ENV == 'dev':
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
 else:
     app.debug = False;
