@@ -5,23 +5,24 @@
 # Code inspired by https://github.com/abdesslem/CTF (Copyright (c) 2015 Amri Abdesslem)
 #
 
-from flask import Flask, render_template, redirect, url_for, flash, session, abort, request
-from flask_security import Security
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
-from flask_sqlalchemy import SQLAlchemy
-from itsdangerous import URLSafeTimedSerializer
-from sqlalchemy import desc
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, RadioField
-from wtforms.validators import Required, Length, EqualTo, Email
-from flask_wtf.csrf import CSRFProtect
-
 import datetime
+import functools
 import os
 import time
-import functools
+
+from flask import (Flask, abort, flash, redirect, render_template, request,
+                   session, url_for)
+from flask_login import (LoginManager, UserMixin, current_user, login_required,
+                         login_user, logout_user)
+from flask_security import Security
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
+from itsdangerous import URLSafeTimedSerializer
+from sqlalchemy import desc
+from werkzeug.security import check_password_hash, generate_password_hash
+from wtforms import PasswordField, RadioField, StringField, SubmitField
+from wtforms.validators import Email, EqualTo, Length, Required
 
 ################################
 #########   GLOBALS   ##########
