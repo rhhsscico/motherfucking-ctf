@@ -24,6 +24,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import PasswordField, RadioField, StringField, SubmitField
 from wtforms.validators import Email, EqualTo, Length, Required
 
+
 ################################
 #########   GLOBALS   ##########
 ################################
@@ -39,10 +40,11 @@ app.config["SECURITY_PASSWORD_SALT"] = '0000000000000'
 ENV = 'prod'
 
 if ENV == 'dev':
+    app.debug = True
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
 else:
-    app.debug = False;
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://tvnlwdgisnkpyy:d6f6adf2a029b030905e9ab753deb5f8154f1005acb17ed8f0a21dafd4578c1d@ec2-3-226-231-4.compute-1.amazonaws.com:5432/d46psk6l8tnkba"
+    app.debug = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
 #app.config["PREFERRED_URL_SCHEME"] = 'https' #decomment for HTTPS
 CSRFProtect(app)
 
