@@ -24,6 +24,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import PasswordField, RadioField, StringField, SubmitField
 from wtforms.validators import Email, EqualTo, Length, Required
 
+import config
+
 
 ################################
 #########   GLOBALS   ##########
@@ -34,17 +36,13 @@ MIN_SCORE = 20
 RATE_SCORE = 2
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = '0000000000000000000000000'
-app.config["SECURITY_PASSWORD_SALT"] = '0000000000000'
 
-ENV = 'prod'
-
-if ENV == 'dev':
-    app.debug = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
+if app.config["ENV"] == 'production':
+    app.config.from_object("config.ProductionConfig")
 else:
-    app.debug = False
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
+    app.config.from_object("config.DevelopmentConfig")
+
+
 #app.config["PREFERRED_URL_SCHEME"] = 'https' #decomment for HTTPS
 CSRFProtect(app)
 
@@ -91,7 +89,7 @@ class Challenges(db.Model):
     info = db.Column(db.String(1000))
     score = db.Column(db.String(20))
     flag = db.Column(db.String(80))
-    solves = db.Column(db.String(20))
+    solves = db.Column(db.String(20), default='0')
 
     def __repr__(self):
         return '<Challenges %r>' % self.name
@@ -132,6 +130,15 @@ class RegistrationForm(FlaskForm):
                                    validators=[Required(), EqualTo('password')])
     submit = SubmitField('Register')
 
+class NewChallengeForm(FlaskForm):
+    name = StringField('Name', validators=[Required()])
+    category = StringField('Category', validators=[Required()])
+    info = StringField('Info', validators=[Required()])
+    score = StringField('Score', validators=[Required()])
+    flag = StringField('Flag', validators=[Required()])
+    submit = SubmitField('Submit')
+
+
 ################################
 ##########  ROUTES   ###########
 ################################
@@ -146,7 +153,6 @@ def index():
     return render_template('index.html')
 
 @app.route('/challenges')
-@login_required
 def challenges():
     challenges = Challenges.query.all()
     #query = db.session.query(Challenges.category.distinct().label("category"))
@@ -189,6 +195,25 @@ def challenge(challenge_name):
         return 'Wrong Flag!'
     
     return render_template('challenge.html',form=form, challenge=challenge )
+
+@app.route('/new_challenge', methods=['GET', 'POST'])
+def new_challenge():
+    challenge = Challenges()
+    form = NewChallengeForm(obj=challenge)
+    if request.method == 'POST':
+        try:
+            print ("hello")
+            if form.validate_on_submit():
+                form.populate_obj(challenge)
+                db.session.add(challenge)
+                db.session.commit()
+                return redirect('/challenges')
+        except Exception as e:
+            db.session.rollback()
+            flash('There is already a challenge with that name!')
+
+    return render_template('new_challenge.html', title='Submit Challenge', form=form)
+
 
 @app.route('/register', methods=['GET','POST'])
 def register():

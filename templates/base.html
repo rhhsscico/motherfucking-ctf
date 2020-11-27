@@ -8,20 +8,30 @@
         <title>RHHS Science CTF</title>
     </head>
     <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}            
 
-    <h1>RHHS Science CTF</h1>
+        <h1>RHHS Science CTF</h1>
 
-    <p>
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('challenges') }}">Challenges</a>
-    <a href="{{ url_for('scoreboard') }}">Scoreboard</a></p>
-    <p>
-    {% if current_user.is_authenticated %}<a href="{{ url_for('logout') }}">Log Out</a>
-    {% else %}<a href="{{ url_for('register') }}">Register</a> <a href="{{ url_for('login') }}">Log In</a>
-    {% endif %}
-    </p>
-    {% block content %}{% block page_content %} {% endblock %}
-    {% endblock %}
+        <p>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('challenges') }}">Challenges</a>
+            <a href="{{ url_for('scoreboard') }}">Scoreboard</a>
+        </p>
+        <p>
+            {% if current_user.is_authenticated %}<a href="{{ url_for('logout') }}">Log Out</a>
+            {% else %}<a href="{{ url_for('register') }}">Register</a> <a href="{{ url_for('login') }}">Log In</a>
+            {% endif %}
+        </p>
+        {% block content %}{% block page_content %} {% endblock %}
+        {% endblock %}
 
     </body>
 </html>
